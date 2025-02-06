@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart - ShopEZ</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="cart.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="shop.html">Shop</a></li>
+                <li><a href="cart.html">Cart</a></li>
+                <li><a href="register.html">Register</a></li>
+                <li><a href="login.html" onclick="logout()">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Your Cart</h1>
+        <div id="cart-items">
+        </div>
+        <div id="total">
+            <p>Total: <span id="total-price">0</span> USD</p>
+        </div>
+        <button id="checkout-button">Proceed to Checkout</button>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 ShopEZ</p>
+    </footer>
+
+    <script src="cart.js"></script>
+    <script>
+        window.onload = () => {
+            const authToken = localStorage.getItem('auth_token');
+            if (!authToken) {
+                window.location.href = 'login.html';
+            } else {
+                loadCart();
+            }
+        };
+
+        const cartItems = [
+            { id: 1, name: 'Product 1', price: 20, quantity: 1 },
+            { id: 2, name: 'Product 2', price: 15, quantity: 2 },
+        ];
+
+        function loadCart() {
+            const cartContainer = document.getElementById('cart-items');
+            const totalPriceElement = document.getElementById('total-price');
+            let totalPrice = 0;
+
+            cartItems.forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.classList.add('cart-item');
+                itemElement.innerHTML = `
+                    <p>${item.name} (x${item.quantity}) - $${item.price * item.quantity}</p>
+                    <button onclick="removeFromCart(${item.id})">Remove</button>
+                `;
+                cartContainer.appendChild(itemElement);
+
+                totalPrice += item.price * item.quantity;
+            });
+
+            totalPriceElement.textContent = totalPrice.toFixed(2);
+        }
+
+        function removeFromCart(itemId) {
+            alert(`Item ${itemId} removed from cart`);
+        }
+
+        function logout() {
+            localStorage.removeItem('auth_token');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>
