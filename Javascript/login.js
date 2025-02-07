@@ -6,8 +6,6 @@ const errorMessage = document.getElementById('error-message');
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
     errorMessage.innerText = '';
-
-    // Clear previous error styles
     document.querySelectorAll('.input-wrapper').forEach(el => el.classList.remove('incorrect'));
 
     const errors = getLoginFormErrors(
@@ -61,20 +59,21 @@ async function handleLogin() {
         const data = await response.json();
 
         if (!response.ok) {
-            throw new Error(data.message || 'Login failed. Please check your credentials.');
+            throw new Error(data.error || 'Login failed. Please check your credentials.');
         }
 
-        // Save the token to localStorage or sessionStorage
+        if (!data.token) {
+            throw new Error('Authentication token is missing from the response.');
+        }
+
         localStorage.setItem('token', data.token);
 
-        // Redirect to the home page or dashboard after successful login
         window.location.href = 'index.html';
     } catch (error) {
         errorMessage.innerText = error.message;
     }
 }
 
-// Clear error styles on input
 document.querySelectorAll('input').forEach(input => {
     input.addEventListener('input', () => {
         if (input.parentElement.classList.contains('incorrect')) {

@@ -16,7 +16,6 @@ form.addEventListener('submit', async (e) => {
     e.preventDefault();
     errorMessage.innerText = '';
     
-    // Clear previous error styles
     document.querySelectorAll('.input-wrapper').forEach(el => el.classList.remove('incorrect'));
 
     const errors = getSignupFormErrors(
@@ -164,14 +163,12 @@ async function handleSignUp() {
             throw new Error(data.message || 'Registration failed. Please try again.');
         }
 
-        // Redirect to login page after successful registration
         window.location.href = 'login.html';
     } catch (error) {
         errorMessage.innerText = error.message;
     }
 }
 
-// Clear error styles on input
 document.querySelectorAll('input').forEach(input => {
     input.addEventListener('input', () => {
         if (input.parentElement.classList.contains('incorrect')) {
