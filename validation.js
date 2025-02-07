@@ -1,153 +1,153 @@
-const form = document.getElementById('form')
-const firstname_input = document.getElementById('firstname-input')
-const lastname_input = document.getElementById('lastname-input')
-const age_input = document.getElementById('age-input')
-const address_input = document.getElementById('address-input')
-const phone_input = document.getElementById('phone-input')
-const zipcode_input = document.getElementById('zipcode-input')
-const avatar_input = document.getElementById('avatar-input')
-const gender_input = document.getElementById('gender-input')
-const email_input = document.getElementById('email-input')
-const password_input = document.getElementById('password-input')
-const repeat_password_input = document.getElementById('repeat-password-input')
-const error_message = document.getElementById('error-message')
+const form = document.getElementById('form');
+const firstnameInput = document.getElementById('firstname-input');
+const lastnameInput = document.getElementById('lastname-input');
+const ageInput = document.getElementById('age-input');
+const addressInput = document.getElementById('address-input');
+const phoneInput = document.getElementById('phone-input');
+const zipcodeInput = document.getElementById('zipcode-input');
+const avatarInput = document.getElementById('avatar-input');
+const genderInput = document.getElementById('gender-input');
+const emailInput = document.getElementById('email-input');
+const passwordInput = document.getElementById('password-input');
+const repeatPasswordInput = document.getElementById('repeat-password-input');
+const errorMessage = document.getElementById('error-message');
 
 form.addEventListener('submit', async (e) => {
-    let errors = []
+    e.preventDefault();
+    errorMessage.innerText = '';
+    
+    // Clear previous error styles
+    document.querySelectorAll('.input-wrapper').forEach(el => el.classList.remove('incorrect'));
 
-    if (repeat_password_input) {
-        errors = getSignupFormErrors(
-            firstname_input.value,
-            lastname_input.value,
-            age_input.value,
-            address_input.value,
-            phone_input.value,
-            zipcode_input.value,
-            avatar_input.value,
-            gender_input.value,
-            email_input.value,
-            password_input.value,
-            repeat_password_input.value
-        )
-    } else {
-        errors = getLoginFormErrors(email_input.value, password_input.value)
-    }
+    const errors = getSignupFormErrors(
+        firstnameInput.value,
+        lastnameInput.value,
+        ageInput.value,
+        addressInput.value,
+        phoneInput.value,
+        zipcodeInput.value,
+        avatarInput.value,
+        genderInput.value.toUpperCase(),
+        emailInput.value,
+        passwordInput.value,
+        repeatPasswordInput.value
+    );
 
     if (errors.length > 0) {
-        e.preventDefault()
-        error_message.innerText = errors.join('. ')
-    } else {
-        e.preventDefault()
-        if (repeat_password_input) {
-            await handleSignUp()
-        } else {
-            await handleSignIn()
-        }
+        errorMessage.innerText = errors.join('. ');
+        return;
     }
-})
+
+    await handleSignUp();
+});
 
 function getSignupFormErrors(firstname, lastname, age, address, phone, zipcode, avatar, gender, email, password, repeatPassword) {
-    let errors = []
+    const errors = [];
+    const nameRegex = /^[A-Za-z]+$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^\+?\d{5,15}$/;
+    const zipRegex = /^\d{4,10}$/;
+    // const urlRegex = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
 
-    if (firstname === '' || firstname == null) {
-        errors.push('Firstname is required')
-        firstname_input.parentElement.classList.add('incorrect')
+    if (!firstname) {
+        errors.push('First name is required');
+        firstnameInput.parentElement.classList.add('incorrect');
+    } else if (!nameRegex.test(firstname)) {
+        errors.push('First name should contain only letters');
+        firstnameInput.parentElement.classList.add('incorrect');
     }
-    if (lastname === '' || lastname == null) {
-        errors.push('Lastname is required')
-        lastname_input.parentElement.classList.add('incorrect')
+
+    if (!lastname) {
+        errors.push('Last name is required');
+        lastnameInput.parentElement.classList.add('incorrect');
+    } else if (!nameRegex.test(lastname)) {
+        errors.push('Last name should contain only letters');
+        lastnameInput.parentElement.classList.add('incorrect');
     }
-    if (age === '' || age == null || isNaN(age) || age < 13) {
-        errors.push('Age must be above 13')
-        age_input.parentElement.classList.add('incorrect')
+
+    if (!age) {
+        errors.push('Age is required');
+        ageInput.parentElement.classList.add('incorrect');
+    } else if (isNaN(age) || age < 13 || age > 120) {
+        errors.push('Age must be between 13 and 120');
+        ageInput.parentElement.classList.add('incorrect');
     }
-    if (address === '' || address == null) {
-        errors.push('Address is required')
-        address_input.parentElement.classList.add('incorrect')
+
+    if (!address) {
+        errors.push('Address is required');
+        addressInput.parentElement.classList.add('incorrect');
     }
-    if (phone === '' || phone == null || phone.length < 10 || phone.length > 15) {
-        errors.push('Phone number must have a typical length')
-        phone_input.parentElement.classList.add('incorrect')
+
+    if (!phone) {
+        errors.push('Phone number is required');
+        phoneInput.parentElement.classList.add('incorrect');
+    } else if (!phoneRegex.test(phone)) {
+        errors.push('Phone number must be 5-15 digits and may start with +');
+        phoneInput.parentElement.classList.add('incorrect');
     }
-    if (zipcode === '' || zipcode == null) {
-        errors.push('Zipcode is required')
-        zipcode_input.parentElement.classList.add('incorrect')
+
+    if (!zipcode) {
+        errors.push('Zipcode is required');
+        zipcodeInput.parentElement.classList.add('incorrect');
+    } else if (!zipRegex.test(zipcode)) {
+        errors.push('Zipcode must be 4-10 digits');
+        zipcodeInput.parentElement.classList.add('incorrect');
     }
-    if (avatar === '' || avatar == null || avatar.length < 3) {
-        errors.push('Avatar must be more than 2 characters long')
-        avatar_input.parentElement.classList.add('incorrect')
+
+    if (!avatar) {
+        errors.push('Avatar URL is required');
+        avatarInput.parentElement.classList.add('incorrect');
+    } // else if (!urlRegex.test(avatar)) {
+       /// errors.push('Avatar must be a valid URL');
+       // avatarInput.parentElement.classList.add('incorrect');
+   // }
+
+    if (!gender) {
+        errors.push('Gender is required');
+        genderInput.parentElement.classList.add('incorrect');
+    } else if (!['MALE', 'FEMALE', 'OTHER'].includes(gender)) {
+        errors.push('Gender must be MALE, FEMALE, or OTHER');
+        genderInput.parentElement.classList.add('incorrect');
     }
-    if (gender === '' || gender == null) {
-        errors.push('Gender is required')
-        gender_input.parentElement.classList.add('incorrect')
+
+    if (!email) {
+        errors.push('Email is required');
+        emailInput.parentElement.classList.add('incorrect');
+    } else if (!emailRegex.test(email)) {
+        errors.push('Invalid email format');
+        emailInput.parentElement.classList.add('incorrect');
     }
-    if (email === '' || email == null) {
-        errors.push('Email is required')
-        email_input.parentElement.classList.add('incorrect')
+
+    if (!password) {
+        errors.push('Password is required');
+        passwordInput.parentElement.classList.add('incorrect');
+    } else if (password.length < 8) {
+        errors.push('Password must be at least 8 characters');
+        passwordInput.parentElement.classList.add('incorrect');
     }
-    if (password === '' || password == null) {
-        errors.push('Password is required')
-        password_input.parentElement.classList.add('incorrect')
-    }
-    if (password.length < 8) {
-        errors.push('Password must have 8 characters')
-        password_input.parentElement.classList.add('incorrect')
-    }
-    if (repeatPassword === '' || repeatPassword == null) {
-        errors.push('Repeat password is required')
-        repeat_password_input.parentElement.classList.add('incorrect')
-    }
+
     if (password !== repeatPassword) {
-        errors.push('Password does not match repeated password')
-        password_input.parentElement.classList.add('incorrect')
-        repeat_password_input.parentElement.classList.add('incorrect')
+        errors.push('Passwords do not match');
+        passwordInput.parentElement.classList.add('incorrect');
+        repeatPasswordInput.parentElement.classList.add('incorrect');
     }
 
     return errors;
 }
-
-function getLoginFormErrors(email, password) {
-    let errors = []
-
-    if (email === '' || email == null) {
-        errors.push('Email is required')
-        email_input.parentElement.classList.add('incorrect')
-    }
-    if (password === '' || password == null) {
-        errors.push('Password is required')
-        password_input.parentElement.classList.add('incorrect')
-    }
-
-    return errors;
-}
-
-const allInputs = [
-    firstname_input, lastname_input, age_input, address_input, phone_input, zipcode_input, avatar_input, gender_input, 
-    email_input, password_input, repeat_password_input
-].filter(input => input != null)
-
-allInputs.forEach(input => {
-    input.addEventListener('input', () => {
-        if (input.parentElement.classList.contains('incorrect')) {
-            input.parentElement.classList.remove('incorrect')
-            error_message.innerText = ''
-        }
-    })
-})
 
 async function handleSignUp() {
     const userData = {
-        firstName: firstname_input.value,
-        lastName: lastname_input.value,
-        age: parseInt(age_input.value, 10),
-        email: email_input.value,
-        password: password_input.value,
-        address: address_input.value,
-        phone: phone_input.value,
-        zipcode: zipcode_input.value,
-        avatar: avatar_input.value,
-        gender: gender_input.value.toUpperCase(),
-    }
+        firstName: firstnameInput.value.trim(),
+        lastName: lastnameInput.value.trim(),
+        age: parseInt(ageInput.value, 10),
+        email: emailInput.value.trim(),
+        password: passwordInput.value,
+        address: addressInput.value.trim(),
+        phone: phoneInput.value.trim(),
+        zipcode: zipcodeInput.value.trim(),
+        avatar: avatarInput.value.trim(),
+        gender: genderInput.value.trim().toUpperCase(),
+    };
 
     try {
         const response = await fetch('https://api.everrest.educata.dev/auth/sign_up', {
@@ -156,46 +156,27 @@ async function handleSignUp() {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(userData),
-        })
+        });
 
+        const data = await response.json();
+        
         if (!response.ok) {
-            const data = await response.json()
-            error_message.innerText = data.message || 'Something went wrong'
-        } else {
-            const data = await response.json()
-            console.log('Signup successful', data)
-            window.location.href = '/IT-Step2/login.html';
+            throw new Error(data.message || 'Registration failed. Please try again.');
         }
+
+        // Redirect to login page after successful registration
+        window.location.href = 'login.html';
     } catch (error) {
-        error_message.innerText = 'Error: ' + error.message
+        errorMessage.innerText = error.message;
     }
 }
 
-async function handleSignIn() {
-    const userData = {
-        email: email_input.value,
-        password: password_input.value,
-    }
-
-    try {
-        const response = await fetch('https://api.everrest.educata.dev/auth/sign_in', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(userData),
-        })
-
-        if (!response.ok) {
-            const data = await response.json()
-            error_message.innerText = data.message || 'Something went wrong'
-        } else {
-            const data = await response.json()
-            console.log('Signin successful', data)
-            localStorage.setItem('auth_token', data.token)
-            window.location.href = '/IT-Step2/shop.html'; 
+// Clear error styles on input
+document.querySelectorAll('input').forEach(input => {
+    input.addEventListener('input', () => {
+        if (input.parentElement.classList.contains('incorrect')) {
+            input.parentElement.classList.remove('incorrect');
+            errorMessage.innerText = '';
         }
-    } catch (error) {
-        error_message.innerText = 'Error: ' + error.message
-    }
-}
+    });
+});
