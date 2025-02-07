@@ -1,3 +1,14 @@
+function showSidebar1(){
+    const sidebar = document.querySelector('.sidebar')
+    sidebar.style.display = 'flex'
+}
+
+function hideSidebar1(){
+    const sidebar = document.querySelector('.sidebar')
+    sidebar.style.display = 'none'
+}
+
+
 function showSidebar() {
     document.getElementById("filtersSidebar").classList.add("open");
 }
