@@ -83,7 +83,7 @@ form input {
     padding: 0.6em;
     font: inherit;
     border-radius: 0 10px 10px 0;
-    border: 2px solid var(--input-color-color);
+    border: 2px solid var(--input-color);
     border-left: none;
     background-color: var(--input-color);
     transform: 150ms ease;

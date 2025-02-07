@@ -1,4 +1,6 @@
 const apiUrl = 'https://api.everrest.educata.dev/shop/products';
+const categoryUrl = 'https://api.everrest.educata.dev/shop/products/categories';
+
 
 async function getProductById(id) {
   const response = await fetch(`${apiUrl}/id/${id}`, {
@@ -11,6 +13,49 @@ async function getProductById(id) {
   const data = await response.json();
   displayProduct(data);
 }
+
+async function getAllCategories() {
+  const categoryUrl = 'https://api.everrest.educata.dev/shop/products/categories';
+
+  try {
+    const response = await fetch(categoryUrl, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch categories');
+    }
+
+    const categories = await response.json();
+    console.log(categories); // You can display or process the categories here
+
+    displayCategories(categories);
+
+    // Optionally, you could pass the categories to a function to display them
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+    alert('There was an error fetching categories. Please try again later.');
+  }
+}
+
+function displayCategories(categories) {
+  const categoryFilter = document.getElementById('categoryFilter');
+  
+  // Clear existing options before adding new ones
+  categoryFilter.innerHTML = '<option value="">All Categories</option>';
+  
+  categories.forEach((category) => {
+    const option = document.createElement('option');
+    option.value = category.id; // Assuming each category has an `id`
+    option.textContent = category.name; // Assuming each category has a `name`
+    categoryFilter.appendChild(option);
+  });
+}
+
+getAllCategories();
 
 async function searchProducts() {
   const keyword = document.getElementById('searchKeyword').value;
@@ -72,12 +117,15 @@ function displayProducts(products) {
 }
 
 async function rateProduct(productId, rating) {
+  const token = localStorage.getItem('accessToken');
+
   const response = await fetch(`${apiUrl}/rate`, {
+    
     method: 'POST',
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer <your_token_here>', // Tokenit chavanacvlo unda
+      'Authorization': `Bearer ${token}`, // Tokenit chavanacvlo unda
     },
     body: JSON.stringify({
       productId: productId,

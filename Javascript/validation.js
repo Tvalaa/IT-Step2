@@ -46,7 +46,7 @@ function getSignupFormErrors(firstname, lastname, age, address, phone, zipcode, 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const phoneRegex = /^\+?\d{5,15}$/;
     const zipRegex = /^\d{4,10}$/;
-    // const urlRegex = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
+    const urlRegex = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
 
     if (!firstname) {
         errors.push('First name is required');
@@ -96,18 +96,18 @@ function getSignupFormErrors(firstname, lastname, age, address, phone, zipcode, 
     if (!avatar) {
         errors.push('Avatar URL is required');
         avatarInput.parentElement.classList.add('incorrect');
-    } // else if (!urlRegex.test(avatar)) {
-       /// errors.push('Avatar must be a valid URL');
-       // avatarInput.parentElement.classList.add('incorrect');
-   // }
+    } else if (!urlRegex.test(avatar)) {
+        errors.push('Avatar must be a valid URL');
+        avatarInput.parentElement.classList.add('incorrect');
+    }
 
     if (!gender) {
         errors.push('Gender is required');
         genderInput.parentElement.classList.add('incorrect');
-    } else if (!['MALE', 'FEMALE', 'OTHER'].includes(gender)) {
+    } else if (!['MALE', 'FEMALE', 'OTHER'].includes(gender.toUpperCase())) {
         errors.push('Gender must be MALE, FEMALE, or OTHER');
         genderInput.parentElement.classList.add('incorrect');
-    }
+    }    
 
     if (!email) {
         errors.push('Email is required');

@@ -62,15 +62,44 @@ async function handleLogin() {
             throw new Error(data.error || 'Login failed. Please check your credentials.');
         }
 
-        if (!data.token) {
-            throw new Error('Authentication token is missing from the response.');
-        }
 
         localStorage.setItem('token', data.token);
+
+        await fetchCurrentUserData();
+
 
         window.location.href = 'index.html';
     } catch (error) {
         errorMessage.innerText = error.message;
+    }
+
+}
+
+async function fetchCurrentUserData() {
+    const accessToken = localStorage.getItem('access_token'); // Retrieve access token
+
+    if (!accessToken) {
+        console.error('No access token found.');
+        return;
+    }
+
+    try {
+        const response = await fetch('https://api.everrest.educata.dev/auth', {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`, // Attach token in Authorization header
+            }
+        });
+
+        const userData = await response.json();
+
+        if (response.ok) {
+            console.log('User Data:', userData);
+            // You can process the user data here, e.g., display it on the dashboard
+        } else {
+            throw new Error('Failed to fetch user data.');
+        }
+    } catch (error) {
+        console.error('Error fetching user data:', error);
     }
 }
 

@@ -76,3 +76,11 @@ body {
     color: #555;
   }
   
+  @media(max-width: 750px){
+    .hideOnMobile{
+        display: none;
+    }
+    .menuButton{
+        display: block;
+    }
+}
