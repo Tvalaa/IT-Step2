@@ -43,10 +43,10 @@ async function getAllCategories() {
 
 function displayCategories(categories) {
   const categoryFilter = document.getElementById('categoryFilter');
-  
+
   // Clear existing options before adding new ones
   categoryFilter.innerHTML = '<option value="">All Categories</option>';
-  
+
   categories.forEach((category) => {
     const option = document.createElement('option');
     option.value = category.id; // Assuming each category has an `id`
@@ -64,7 +64,7 @@ async function searchProducts() {
   const priceRange = document.getElementById('priceRange').value;
 
   let query = `keywords=${keyword}&page_size=5`;
-  
+
   if (category) query += `&category=${category}`;
   if (brand) query += `&brand=${brand}`;
   if (priceRange) query += `&price_lte=${priceRange}`;
@@ -99,6 +99,7 @@ function displayProduct(product) {
 function displayProducts(products) {
   const productInfo = document.getElementById('productInfo');
   productInfo.innerHTML = '';
+
   products.forEach((product) => {
     const productElement = document.createElement('div');
     productElement.classList.add('product');
@@ -111,16 +112,42 @@ function displayProducts(products) {
       <p>Stock: ${product.stock}</p>
       <p>Rating: ${product.rating}</p>
       <button onclick="getProductById('${product._id}')">View More</button>
+      <button onclick="addToCart('${product._id}', '${product.title}', ${product.price.current}, '${product.price.currency}')">Add to Cart</button>
     `;
     productInfo.appendChild(productElement);
   });
 }
 
+function addToCart(productId, productTitle, productPrice, productCurrency) {
+  console.log(`Product ${productId} added to cart`);
+
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+  const existingProductIndex = cart.findIndex(item => item.id === productId);
+
+  if (existingProductIndex > -1) {
+    cart[existingProductIndex].quantity += 1;
+  } else {
+    cart.push({
+      id: productId,
+      title: productTitle,
+      price: productPrice,
+      currency: productCurrency,
+      quantity: 1
+    });
+  }
+
+  localStorage.setItem('cart', JSON.stringify(cart));
+
+  alert('Product added to cart!');
+}
+
+
 async function rateProduct(productId, rating) {
   const token = localStorage.getItem('accessToken');
 
   const response = await fetch(`${apiUrl}/rate`, {
-    
+
     method: 'POST',
     headers: {
       'Accept': 'application/json',
@@ -135,7 +162,7 @@ async function rateProduct(productId, rating) {
 
   const data = await response.json();
   alert('Rated successfully!');
-  displayProduct(data); 
+  displayProduct(data);
 }
 
 document.getElementById('priceRange').addEventListener('input', (event) => {
